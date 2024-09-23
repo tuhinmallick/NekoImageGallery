@@ -1,28 +1,19 @@
 services:
-  qdrant-database:
-    image: qdrant/qdrant:latest
-    ports:
-      - "127.0.0.1:6333:6333"
-      - "127.0.0.1:6334:6334"
-    volumes:
-      - "./qdrant_data:/qdrant/storage:z"
   neko-image-gallery:
     # Uncomment this section to build image from source code
     #    build:
     #      context: .
     #      dockerfile: Dockerfile
-    image: edgeneko/neko-image-gallery:latest
+    image: edgeneko/neko-image-gallery:latest-cuda12.1
     ports:
       - "8000:8000"
     volumes:
       - "./static:/opt/NekoImageGallery/static"
     environment:
-      - APP_QDRANT__HOST=qdrant-database
+      - APP_QDRANT__HOST=qdrant.manobo.de
       - APP_QDRANT__PORT=6333
       - APP_QDRANT__GRPC_PORT=6334
       - APP_QDRANT__PREFER_GRPC=True
-    depends_on:
-      - qdrant-database
     deploy:
       resources:
         reservations:
@@ -31,6 +22,7 @@ services:
               count: 1
               capabilities:
                 - gpu
+
 networks:
   default:
     name: neko-image-gallery
