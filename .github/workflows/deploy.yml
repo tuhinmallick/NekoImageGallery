@@ -76,5 +76,5 @@ jobs:
             --memory=16Gi \
             --max-instances=50 \
             --set-env-vars=PROJECT_ID=${{ env.GCP_PROJECT_ID }},API_URL=${{ env.API_URL }},APP_MODE=${{ env.APP_MODE }},TAG_NAME=${{ github.sha }},APP_QDRANT__API_KEY=${{ secrets.APP_QDRANT__API_KEY }},APP_STORAGE__S3__ACCESS_KEY_ID=${{ secrets.APP_STORAGE__S3__ACCESS_KEY_ID }},APP_STORAGE__S3__SECRET_ACCESS_KEY=${{ secrets.APP_STORAGE__S3__SECRET_ACCESS_KEY }} \
-            --service-account=styleguru-api-sa@${{ env.GCP_PROJECT_ID }}.iam.gserviceaccount.com \
+            --service-account=market-intel-api-sa@${{ env.GCP_PROJECT_ID }}.iam.gserviceaccount.com \
             --timeout=3600s
