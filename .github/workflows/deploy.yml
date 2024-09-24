@@ -62,40 +62,10 @@ jobs:
         with:
           project_id: ${{ env.GCP_PROJECT_ID }}  # GCP project ID stored as a secret
 
-      - name: Configure Docker to use gcloud as a credential helper
-        run: gcloud auth configure-docker
+      - name: Pull the latest image
+        run: docker pull tuhinmallick/neko-image-gallery:latest-cuda12.1  # Pull the pre-built image from DockerHub
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Pull the latest image for caching (if it exists)
-        run: docker pull tuhinmallick/neko-image-gallery:latest-cuda12.1 || exit 0
-
-      - name: Cache Docker layers
-        uses: actions/cache@v4
-        with:
-          path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-buildx-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-buildx-
-
-      - name: Build and push Docker image
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          push: true
-          tags: |
-            tuhinmallick/neko-image-gallery:${{ github.sha }}
-            tuhinmallick/neko-image-gallery:latest-cuda12.1
-          cache-from: type=registry,ref=tuhinmallick/neko-image-gallery:latest-cuda12.1
-          cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
-          build-args: |
-            API_KEY=${{ secrets.APP_QDRANT__API_KEY }}  # Passing sensitive API_KEY from GitHub secrets
-
-      - name: Verify Docker images after build
-        run: docker images  # Verify that the image was successfully created
-
-      - name: Deploy to Cloud Run with .env variables
+      - name: Deploy to Cloud Run with environment variables
         run: |
           gcloud run deploy ${{ env.SERVICE_NAME }} \
             --image=tuhinmallick/neko-image-gallery:latest-cuda12.1 \
