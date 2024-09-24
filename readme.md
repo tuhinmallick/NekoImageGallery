@@ -4,7 +4,7 @@
 [![codecov](https://codecov.io/gh/hv0905/NekoImageGallery/branch/master/graph/badge.svg?token=JK2KZBDIYP)](https://codecov.io/gh/hv0905/NekoImageGallery)
 [![Maintainability](https://api.codeclimate.com/v1/badges/ac97a1146648996b68ea/maintainability)](https://codeclimate.com/github/hv0905/NekoImageGallery/maintainability)
 ![Man hours](https://img.shields.io/endpoint?url=https%3A%2F%2Fmanhours.aiursoft.cn%2Fr%2Fgithub.com%2Fhv0905%2FNekoImageGallery.json)
-[![Docker Pulls](https://img.shields.io/docker/pulls/edgeneko/neko-image-gallery)](https://hub.docker.com/r/edgeneko/neko-image-gallery)
+[![Check & deploy to DockerHub](https://github.com/tuhinmallick/NekoImageGallery/actions/workflows/prod.yml/badge.svg)](https://github.com/tuhinmallick/NekoImageGallery/actions/workflows/prod.yml)
 
 An online AI image search engine based on the Clip model and Qdrant vector database. Supports keyword search and similar
 image search.
