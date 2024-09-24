@@ -23,7 +23,7 @@ ENV APP_MODEL__EASYPADDLEOCR=/opt/models/ocr
 
 COPY . .
 
-EXPOSE 8000
+EXPOSE 8080
 
 VOLUME ["/opt/NekoImageGallery/static"]
 
