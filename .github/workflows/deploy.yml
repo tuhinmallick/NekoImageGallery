@@ -12,7 +12,7 @@ permissions:
 
 env:
   SERVICE_NAME: styleguru-api
-  GCP_REGION: europe-west3   # Define your region here
+  GCP_REGION: europe-west3
   GCP_PROJECT_ID: julie-grace-api
   # Non-sensitive Environment Variables
   APP_QDRANT__MODE: server
@@ -60,7 +60,7 @@ jobs:
       - name: Set up Google Cloud SDK
         uses: google-github-actions/setup-gcloud@v2
         with:
-          project_id: ${{ env.GCP_PROJECT_ID }}  # GCP project ID stored as a secret
+          project_id: ${{ env.GCP_PROJECT_ID }}
 
       - name: Pull the latest image
         run: docker pull tuhinmallick/neko-image-gallery:latest-cuda12.1  # Pull the pre-built image from DockerHub
@@ -75,34 +75,34 @@ jobs:
             --cpu=4 \
             --memory=16Gi \
             --max-instances=50 \
-            --set-env-vars "PROJECT_ID=${{ env.GCP_PROJECT_ID }},\
-APP_QDRANT__MODE=${{ env.APP_QDRANT__MODE }},\
-APP_QDRANT__HOST=${{ env.APP_QDRANT__HOST }},\
-APP_QDRANT__PORT=${{ env.APP_QDRANT__PORT }},\
-APP_QDRANT__GRPC_PORT=${{ env.APP_QDRANT__GRPC_PORT }},\
-APP_QDRANT__PREFER_GRPC=${{ env.APP_QDRANT__PREFER_GRPC }},\
-APP_QDRANT__COLL=${{ env.APP_QDRANT__COLL }},\
-APP_DEVICE=${{ env.APP_DEVICE }},\
-APP_CORS_ORIGINS=${{ env.APP_CORS_ORIGINS }},\
-APP_MODEL__CLIP=${{ env.APP_MODEL__CLIP }},\
-APP_MODEL__BERT=${{ env.APP_MODEL__BERT }},\
-APP_MODEL__EASYPADDLEOCR=${{ env.APP_MODEL__EASYPADDLEOCR }},\
-APP_OCR_SEARCH__ENABLE=${{ env.APP_OCR_SEARCH__ENABLE }},\
-APP_OCR_SEARCH__OCR_MODULE=${{ env.APP_OCR_SEARCH__OCR_MODULE }},\
-APP_OCR_SEARCH__OCR_MIN_CONFIDENCE=${{ env.APP_OCR_SEARCH__OCR_MIN_CONFIDENCE }},\
-APP_OCR_SEARCH__OCR_LANGUAGE=${{ env.APP_OCR_SEARCH__OCR_LANGUAGE }},\
-APP_ADMIN_API_ENABLE=${{ env.APP_ADMIN_API_ENABLE }},\
-APP_ADMIN_TOKEN=${{ env.APP_ADMIN_TOKEN }},\
-APP_ADMIN_INDEX_QUEUE_MAX_LENGTH=${{ env.APP_ADMIN_INDEX_QUEUE_MAX_LENGTH }},\
-APP_ACCESS_PROTECTED=${{ env.APP_ACCESS_PROTECTED }},\
-APP_ACCESS_TOKEN=${{ env.APP_ACCESS_TOKEN }},\
-APP_STORAGE__METHOD=${{ env.APP_STORAGE__METHOD }},\
-APP_STORAGE__S3__BUCKET=${{ env.APP_STORAGE__S3__BUCKET }},\
-APP_STORAGE__S3__PATH=${{ env.APP_STORAGE__S3__PATH }},\
-APP_STORAGE__S3__REGION=${{ env.APP_STORAGE__S3__REGION }},\
-APP_STORAGE__S3__ENDPOINT_URL=${{ env.APP_STORAGE__S3__ENDPOINT_URL }},\
-APP_QDRANT__API_KEY=${{ secrets.APP_QDRANT__API_KEY }},\
-APP_STORAGE__S3__ACCESS_KEY_ID=${{ secrets.APP_STORAGE__S3__ACCESS_KEY_ID }},\
-APP_STORAGE__S3__SECRET_ACCESS_KEY=${{ secrets.APP_STORAGE__S3__SECRET_ACCESS_KEY }}" \
+            --set-env-vars PROJECT_ID=${{ env.GCP_PROJECT_ID }} \
+            --set-env-vars APP_QDRANT__MODE=${{ env.APP_QDRANT__MODE }} \
+            --set-env-vars APP_QDRANT__HOST=${{ env.APP_QDRANT__HOST }} \
+            --set-env-vars APP_QDRANT__PORT=${{ env.APP_QDRANT__PORT }} \
+            --set-env-vars APP_QDRANT__GRPC_PORT=${{ env.APP_QDRANT__GRPC_PORT }} \
+            --set-env-vars APP_QDRANT__PREFER_GRPC=${{ env.APP_QDRANT__PREFER_GRPC }} \
+            --set-env-vars APP_QDRANT__COLL=${{ env.APP_QDRANT__COLL }} \
+            --set-env-vars APP_DEVICE=${{ env.APP_DEVICE }} \
+            --set-env-vars APP_CORS_ORIGINS=${{ env.APP_CORS_ORIGINS }} \
+            --set-env-vars APP_MODEL__CLIP=${{ env.APP_MODEL__CLIP }} \
+            --set-env-vars APP_MODEL__BERT=${{ env.APP_MODEL__BERT }} \
+            --set-env-vars APP_MODEL__EASYPADDLEOCR=${{ env.APP_MODEL__EASYPADDLEOCR }} \
+            --set-env-vars APP_OCR_SEARCH__ENABLE=${{ env.APP_OCR_SEARCH__ENABLE }} \
+            --set-env-vars APP_OCR_SEARCH__OCR_MODULE=${{ env.APP_OCR_SEARCH__OCR_MODULE }} \
+            --set-env-vars APP_OCR_SEARCH__OCR_MIN_CONFIDENCE=${{ env.APP_OCR_SEARCH__OCR_MIN_CONFIDENCE }} \
+            --set-env-vars APP_OCR_SEARCH__OCR_LANGUAGE=${{ env.APP_OCR_SEARCH__OCR_LANGUAGE }} \
+            --set-env-vars APP_ADMIN_API_ENABLE=${{ env.APP_ADMIN_API_ENABLE }} \
+            --set-env-vars APP_ADMIN_TOKEN=${{ env.APP_ADMIN_TOKEN }} \
+            --set-env-vars APP_ADMIN_INDEX_QUEUE_MAX_LENGTH=${{ env.APP_ADMIN_INDEX_QUEUE_MAX_LENGTH }} \
+            --set-env-vars APP_ACCESS_PROTECTED=${{ env.APP_ACCESS_PROTECTED }} \
+            --set-env-vars APP_ACCESS_TOKEN=${{ env.APP_ACCESS_TOKEN }} \
+            --set-env-vars APP_STORAGE__METHOD=${{ env.APP_STORAGE__METHOD }} \
+            --set-env-vars APP_STORAGE__S3__BUCKET=${{ env.APP_STORAGE__S3__BUCKET }} \
+            --set-env-vars APP_STORAGE__S3__PATH=${{ env.APP_STORAGE__S3__PATH }} \
+            --set-env-vars APP_STORAGE__S3__REGION=${{ env.APP_STORAGE__S3__REGION }} \
+            --set-env-vars APP_STORAGE__S3__ENDPOINT_URL=${{ env.APP_STORAGE__S3__ENDPOINT_URL }} \
+            --set-env-vars APP_QDRANT__API_KEY=${{ secrets.APP_QDRANT__API_KEY }} \
+            --set-env-vars APP_STORAGE__S3__ACCESS_KEY_ID=${{ secrets.APP_STORAGE__S3__ACCESS_KEY_ID }} \
+            --set-env-vars APP_STORAGE__S3__SECRET_ACCESS_KEY=${{ secrets.APP_STORAGE__S3__SECRET_ACCESS_KEY }} \
             --service-account=market-intel-api-sa@${{ env.GCP_PROJECT_ID }}.iam.gserviceaccount.com \
             --timeout=3600s
