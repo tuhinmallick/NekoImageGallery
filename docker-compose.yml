@@ -1,19 +1,18 @@
+version: '3.8'
+
 services:
   neko-image-gallery:
     # Uncomment this section to build image from source code
-    #    build:
-    #      context: .
-    #      dockerfile: Dockerfile
-    image: edgeneko/neko-image-gallery:latest-cuda12.1
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: tuhinmallick/neko-image-gallery:latest-cuda12.1
     ports:
       - "8000:8000"
     volumes:
       - "./static:/opt/NekoImageGallery/static"
-    environment:
-      - APP_QDRANT__HOST=qdrant.manobo.de
-      - APP_QDRANT__PORT=6333
-      - APP_QDRANT__GRPC_PORT=6334
-      - APP_QDRANT__PREFER_GRPC=True
+    env_file:
+      - ./config/.env  # This references the .env file for environment variables
     deploy:
       resources:
         reservations:

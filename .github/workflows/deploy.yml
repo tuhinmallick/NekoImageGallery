@@ -1,0 +1,110 @@
+name: Deploy to Google Cloud Run
+
+on:
+  push:
+    tags:
+      - 'v*'  # Trigger the workflow only on version tags (e.g., v1.0.0)
+  workflow_dispatch:  # Allows manual triggering of the workflow
+
+permissions:
+  contents: read
+  id-token: write
+
+env:
+  SERVICE_NAME: styleguru-api
+  GCP_REGION: europe-west3   # Define your region here
+  GCP_PROJECT_ID: julie-grace-api
+  # Non-sensitive Environment Variables
+  APP_QDRANT__MODE: server
+  APP_QDRANT__HOST: 2b5b515d-1707-41d6-8f9e-8b3a9bc5d053.europe-west3-0.gcp.cloud.qdrant.io
+  APP_QDRANT__PORT: 6333
+  APP_QDRANT__GRPC_PORT: 6334
+  APP_QDRANT__PREFER_GRPC: "True"
+  APP_QDRANT__COLL: NekoImg
+  APP_DEVICE: auto
+  APP_CORS_ORIGINS: '["*"]'
+  APP_MODEL__CLIP: patrickjohncyh/fashion-clip
+  APP_MODEL__BERT: bert-base-uncased
+  APP_MODEL__EASYPADDLEOCR: 
+  APP_OCR_SEARCH__ENABLE: "True"
+  APP_OCR_SEARCH__OCR_MODULE: easypaddleocr
+  APP_OCR_SEARCH__OCR_MIN_CONFIDENCE: 1e-2
+  APP_OCR_SEARCH__OCR_LANGUAGE: '["en"]'
+  APP_ADMIN_API_ENABLE: "True"
+  APP_ADMIN_TOKEN: test
+  APP_ADMIN_INDEX_QUEUE_MAX_LENGTH: 200
+  APP_ACCESS_PROTECTED: "True"
+  APP_ACCESS_TOKEN: test
+  APP_STORAGE__METHOD: s3
+  APP_STORAGE__S3__BUCKET: NekoImageGallery
+  APP_STORAGE__S3__PATH: ./static
+  APP_STORAGE__S3__REGION: eu-central-003
+  APP_STORAGE__S3__ENDPOINT_URL: https://s3.eu-central-003.backblazeb2.com
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Maximize build disk space
+        uses: jlumbroso/free-disk-space@main  # Free up disk space for larger builds
+      
+      - name: Checkout code
+        uses: actions/checkout@v4  # Checkout the repository
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v1
+        with:
+          credentials_json: ${{ secrets.GCP_SA_CREDENTIALS }}  # GCP credentials stored as a secret
+      
+      - name: Set up Google Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{ env.GCP_PROJECT_ID }}  # GCP project ID stored as a secret
+
+      - name: Configure Docker to use gcloud as a credential helper
+        run: gcloud auth configure-docker
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Pull the latest image for caching (if it exists)
+        run: docker pull tuhinmallick/neko-image-gallery:latest-cuda12.1 || exit 0
+
+      - name: Cache Docker layers
+        uses: actions/cache@v4
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: |
+            tuhinmallick/neko-image-gallery:${{ github.sha }}
+            tuhinmallick/neko-image-gallery:latest-cuda12.1
+          cache-from: type=registry,ref=tuhinmallick/neko-image-gallery:latest-cuda12.1
+          cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
+          build-args: |
+            API_KEY=${{ secrets.APP_QDRANT__API_KEY }}  # Passing sensitive API_KEY from GitHub secrets
+
+      - name: Verify Docker images after build
+        run: docker images  # Verify that the image was successfully created
+
+      - name: Deploy to Cloud Run with .env variables
+        run: |
+          gcloud run deploy ${{ env.SERVICE_NAME }} \
+            --image=tuhinmallick/neko-image-gallery:latest-cuda12.1 \
+            --region=${{ env.GCP_REGION }} \
+            --platform=managed \
+            --allow-unauthenticated \
+            --cpu=4 \
+            --memory=16Gi \
+            --max-instances=50 \
+            --set-env-vars=PROJECT_ID=${{ env.GCP_PROJECT_ID }},API_URL=${{ env.API_URL }},APP_MODE=${{ env.APP_MODE }},TAG_NAME=${{ github.sha }},APP_QDRANT__API_KEY=${{ secrets.APP_QDRANT__API_KEY }},APP_STORAGE__S3__ACCESS_KEY_ID=${{ secrets.APP_STORAGE__S3__ACCESS_KEY_ID }},APP_STORAGE__S3__SECRET_ACCESS_KEY=${{ secrets.APP_STORAGE__S3__SECRET_ACCESS_KEY }} \
+            --service-account=styleguru-api-sa@${{ env.GCP_PROJECT_ID }}.iam.gserviceaccount.com \
+            --timeout=3600s
